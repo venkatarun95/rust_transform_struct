@@ -1,60 +1,35 @@
-// #![feature(trace_macros)]
-//
-// trace_macros!(true);
-
-// #[macro_export]
-// macro_rules! transform_struct {
-//     (pub struct $base_struct:ident $new_stuct:ident {
-//         $( $simple_field:ident: $simple_ty:ty ),*
-//         $([ ($trans_field:ident, $trans_func:ident) : ($trans_base_ty:ty, $trans_new_ty:ty) ]),*
-//         $(,)?
-//     }) => {
-//         pub struct $base_struct {
-//             $(
-//                 $simple_field: $simple_ty
-//             ),*,
-//             $(
-//                 $trans_field : $trans_base_ty
-//             ),*
-//         }
-//
-//         // pub struct $new_struct {
-//         //     $(
-//         //         $field: $trans_new_ty,
-//         //     ),*
-//         // }
-//     }
-// }
-
 #[macro_export]
 macro_rules! transform_struct {
     // Case when simple (non-transformed) members are present. Separate cases are needed to handle
     // commas at the end of simple (non-transformed) members
-    (pub struct $base_struct:ident $new_struct:ident {
-        $( $simple_field:ident: $simple_ty:ty ),+ $(,)?
+    ($(#[derive($($arg:tt),+)])?
+    $struct_vis:vis struct $base_struct:ident $new_struct:ident {
+        $( $field_vis:vis $simple_field:ident: $simple_ty:ty ),+ $(,)?
         $(> {
-            $($trans_field:ident : $trans_base_ty:ty => ($trans_func:ident -> $trans_new_ty:ty) ),+
+            $($trans_vis:vis $trans_field:ident : $trans_base_ty:ty => ($trans_func:ident -> $trans_new_ty:ty) ),+
             $(,)?
         })?
     }) => {
-        pub struct $base_struct {
+        $(#[derive($($arg),+)])?
+        $struct_vis struct $base_struct {
             $(
-                $simple_field: $simple_ty
+                $field_vis $simple_field: $simple_ty
             ),+,
             $(
                 $(
-                    $trans_field : $trans_base_ty
+                    $trans_vis $trans_field : $trans_base_ty
                 ),+
             )?
         }
 
-        pub struct $new_struct {
+        $(#[derive($($arg),+)])?
+        $struct_vis struct $new_struct {
             $(
-                $simple_field: $simple_ty
+                $field_vis $simple_field: $simple_ty
             ),+,
             $(
                 $(
-                    $trans_field : $trans_new_ty
+                    $trans_vis $trans_field : $trans_new_ty
                 ),+
             )?
         }
@@ -75,24 +50,27 @@ macro_rules! transform_struct {
         }
     };
     // Case when only transformed members are present
-    (pub struct $base_struct:ident $new_struct:ident {
+    ($(#[derive($($arg:tt),+)])?
+    $struct_vis:vis struct $base_struct:ident $new_struct:ident {
         $(> {
-            $($trans_field:ident : $trans_base_ty:ty => ($trans_func:ident -> $trans_new_ty:ty) ),+
+            $($field_vis:vis $trans_field:ident : $trans_base_ty:ty => ($trans_func:ident -> $trans_new_ty:ty) ),+
             $(,)?
         })?
     }) => {
-        pub struct $base_struct {
+        $(#[derive($($arg),+)])?
+        $struct_vis struct $base_struct {
             $(
                 $(
-                    $trans_field : $trans_base_ty
+                    $field_vis $trans_field : $trans_base_ty
                 ),+
             )?
         }
 
-        pub struct $new_struct {
+        $(#[derive($($arg),+)])?
+        $struct_vis struct $new_struct {
             $(
                 $(
-                    $trans_field : $trans_new_ty
+                    $field_vis $trans_field : $trans_new_ty
                 ),+
             )?
         }

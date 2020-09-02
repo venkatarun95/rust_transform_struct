@@ -1,7 +1,7 @@
 use transform_struct::transform_struct;
 
 fn round_float(f: f64) -> u64 {
-    f as u64
+    f.round() as u64
 }
 
 fn round_float_pair(f: (f64, f64)) -> (u64, u64) {
@@ -9,6 +9,7 @@ fn round_float_pair(f: (f64, f64)) -> (u64, u64) {
 }
 
 transform_struct!(
+    #[derive(Clone,PartialEq)]
     pub struct TestStruct1 TestNewStruct1 {
         a: char,
         > {
@@ -30,10 +31,11 @@ fn test_into() {
 }
 
 transform_struct!(
-    pub struct TestStruct2 TestNewStruct2 {
-        a: char
+    #[derive(Clone)]
+    struct TestStruct2 TestNewStruct2 {
+        pub a: char
         > {
-            f:f64 => (round_float -> u64)
+            pub f:f64 => (round_float -> u64)
         }
     }
 );
@@ -65,8 +67,9 @@ transform_struct!(
 );
 
 transform_struct!(
-    pub struct TestStruct6 TestNewStruct6 {
-        a: u8
+    #[derive(Clone)]
+    struct TestStruct6 TestNewStruct6 {
+        pub a: u8
     }
 );
 
@@ -75,3 +78,12 @@ transform_struct!(
         a: u8,
     }
 );
+
+#[test]
+fn test_derive() {
+    let x = TestStruct1 { a : 'a', f : 1.2 };
+    let _y = x.clone();
+
+    let x = TestStruct6 { a : 0 };
+    let _y = x.clone();
+}
