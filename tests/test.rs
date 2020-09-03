@@ -12,7 +12,9 @@ transform_struct!(
     /// Foo
     #[derive(Clone,PartialEq)]
     /// Bar
-    pub struct TestStruct1 TestNewStruct1 {
+    pub struct TestStruct1
+    /// Bar2
+    pub struct TestNewStruct1 {
         /// Comment
         a: char,
         > {
@@ -36,7 +38,9 @@ fn test_into() {
 
 transform_struct!(
     #[derive(Clone)]
-    struct TestStruct2 TestNewStruct2 {
+    struct TestStruct2
+    /// Foo
+    struct TestNewStruct2 {
         pub a: char
         > {
             pub f:f64 => (round_float -> u64)
@@ -45,7 +49,9 @@ transform_struct!(
 );
 
 transform_struct!(
-    pub struct TestStruct3 TestNewStruct3 {
+    pub struct TestStruct3
+    #[derive(Clone)]
+    struct TestNewStruct3 {
         a: char,
         b: (u8, u64),
         > {
@@ -55,7 +61,8 @@ transform_struct!(
 );
 
 transform_struct!(
-    pub struct TestStruct4 TestNewStruct4 {
+    pub struct TestStruct4
+    struct TestNewStruct4 {
         > {
             f:f64 => (round_float -> u64)
         }
@@ -63,7 +70,8 @@ transform_struct!(
 );
 
 transform_struct!(
-    pub struct TestStruct5 TestNewStruct5 {
+    struct TestStruct5
+    pub struct TestNewStruct5 {
         > {
             f: (f64, f64) => (round_float_pair -> (u64, u64)),
         }
@@ -74,14 +82,16 @@ transform_struct!(
     /// Foo
     #[derive(Clone)]
     /// Bar
-    struct TestStruct6 TestNewStruct6 {
+    struct TestStruct6
+    struct TestNewStruct6 {
         /// Comment
         pub a: u8
     }
 );
 
 transform_struct!(
-    pub struct TestStruct7 TestNewStruct7 {
+    pub struct TestStruct7
+    pub struct TestNewStruct7 {
         a: u8,
     }
 );

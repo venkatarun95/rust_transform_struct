@@ -2,8 +2,10 @@
 macro_rules! transform_struct {
     // Case when simple (non-transformed) members are present. Separate cases are needed to handle
     // commas at the end of simple (non-transformed) members
-    ($(#[$outer_meta:meta])*
-    $struct_vis:vis struct $base_struct:ident $new_struct:ident {
+    ($(#[$outer_meta1:meta])*
+    $struct_vis1:vis struct $base_struct:ident
+    $(#[$outer_meta2:meta])*
+    $struct_vis2:vis struct $new_struct:ident {
         $(
             $(#[$inner_meta_1:meta])*
             $field_vis:vis $simple_field:ident: $simple_ty:ty
@@ -17,8 +19,8 @@ macro_rules! transform_struct {
             $(,)?
         })?
     }) => {
-        $(#[$outer_meta])*
-        $struct_vis struct $base_struct {
+        $(#[$outer_meta1])*
+        $struct_vis1 struct $base_struct {
             $(
                 $(#[$inner_meta_1])*
                 $field_vis $simple_field: $simple_ty
@@ -31,8 +33,8 @@ macro_rules! transform_struct {
             )?
         }
 
-        $(#[$outer_meta])*
-        $struct_vis struct $new_struct {
+        $(#[$outer_meta2])*
+        $struct_vis2 struct $new_struct {
             $(
                 $(#[$inner_meta_1])*
                 $field_vis $simple_field: $simple_ty
@@ -63,8 +65,10 @@ macro_rules! transform_struct {
     };
     // Case when only transformed members are present
     (
-        $(#[$outer_meta:meta])*
-        $struct_vis:vis struct $base_struct:ident $new_struct:ident {
+        $(#[$outer_meta1:meta])*
+        $struct_vis1:vis struct $base_struct:ident
+        $(#[$outer_meta2:meta])*
+        $struct_vis2:vis struct $new_struct:ident {
             $(> {
                 $(
                     $(#[$inner_meta:meta])*
@@ -73,8 +77,8 @@ macro_rules! transform_struct {
                 $(,)?
             })?
         }) => {
-            $(#[$outer_meta])*
-            $struct_vis struct $base_struct {
+            $(#[$outer_meta1])*
+            $struct_vis1 struct $base_struct {
                 $(
                     $(
                         $(#[$inner_meta])*
@@ -83,8 +87,8 @@ macro_rules! transform_struct {
                 )?
             }
 
-            $(#[$outer_meta])*
-            $struct_vis struct $new_struct {
+            $(#[$outer_meta2])*
+            $struct_vis2 struct $new_struct {
                 $(
                     $(
                         $(#[$inner_meta])*
