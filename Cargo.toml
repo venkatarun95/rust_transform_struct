@@ -1,6 +1,6 @@
 [package]
 name = "transform_struct"
-version = "0.1.1"
+version = "0.1.2"
 authors = ["Venkat Arun <venkatarun95@gmail.com>"]
 edition = "2018"
 

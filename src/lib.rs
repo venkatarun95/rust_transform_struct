@@ -2,38 +2,50 @@
 macro_rules! transform_struct {
     // Case when simple (non-transformed) members are present. Separate cases are needed to handle
     // commas at the end of simple (non-transformed) members
-    ($(#[derive($($arg:tt),+)])?
+    ($(#[$outer_meta:meta])*
     $struct_vis:vis struct $base_struct:ident $new_struct:ident {
-        $( $field_vis:vis $simple_field:ident: $simple_ty:ty ),+ $(,)?
+        $(
+            $(#[$inner_meta_1:meta])*
+            $field_vis:vis $simple_field:ident: $simple_ty:ty
+        ),+
+        $(,)?
         $(> {
-            $($trans_vis:vis $trans_field:ident : $trans_base_ty:ty => ($trans_func:ident -> $trans_new_ty:ty) ),+
+            $(
+                $(#[$inner_meta_2:meta])*
+                $trans_vis:vis $trans_field:ident : $trans_base_ty:ty => ($trans_func:ident -> $trans_new_ty:ty)
+            ),+
             $(,)?
         })?
     }) => {
-        $(#[derive($($arg),+)])?
+        $(#[$outer_meta])*
         $struct_vis struct $base_struct {
             $(
+                $(#[$inner_meta_1])*
                 $field_vis $simple_field: $simple_ty
             ),+,
             $(
                 $(
+                    $(#[$inner_meta_2])*
                     $trans_vis $trans_field : $trans_base_ty
                 ),+
             )?
         }
 
-        $(#[derive($($arg),+)])?
+        $(#[$outer_meta])*
         $struct_vis struct $new_struct {
             $(
+                $(#[$inner_meta_1])*
                 $field_vis $simple_field: $simple_ty
             ),+,
             $(
                 $(
+                    $(#[$inner_meta_2])*
                     $trans_vis $trans_field : $trans_new_ty
                 ),+
             )?
         }
 
+        #[automatically_derived]
         impl From<$base_struct> for $new_struct {
             fn from(base: $base_struct) -> $new_struct {
                 Self {
@@ -50,43 +62,48 @@ macro_rules! transform_struct {
         }
     };
     // Case when only transformed members are present
-    ($(#[derive($($arg:tt),+)])?
-    $struct_vis:vis struct $base_struct:ident $new_struct:ident {
-        $(> {
-            $($field_vis:vis $trans_field:ident : $trans_base_ty:ty => ($trans_func:ident -> $trans_new_ty:ty) ),+
-            $(,)?
-        })?
-    }) => {
-        $(#[derive($($arg),+)])?
-        $struct_vis struct $base_struct {
-            $(
+    (
+        $(#[$outer_meta:meta])*
+        $struct_vis:vis struct $base_struct:ident $new_struct:ident {
+            $(> {
                 $(
-                    $field_vis $trans_field : $trans_base_ty
+                    $(#[$inner_meta:meta])*
+                    $field_vis:vis $trans_field:ident : $trans_base_ty:ty => ($trans_func:ident -> $trans_new_ty:ty)
                 ),+
-            )?
-        }
-
-        $(#[derive($($arg),+)])?
-        $struct_vis struct $new_struct {
-            $(
+                $(,)?
+            })?
+        }) => {
+            $(#[$outer_meta])*
+            $struct_vis struct $base_struct {
                 $(
-                    $field_vis $trans_field : $trans_new_ty
-                ),+
-            )?
-        }
-
-        impl From<$base_struct> for $new_struct {
-            fn from(base: $base_struct) -> $new_struct {
-                Self {
                     $(
+                        $(#[$inner_meta])*
+                        $field_vis $trans_field : $trans_base_ty
+                    ),+
+                )?
+            }
+
+            $(#[$outer_meta])*
+            $struct_vis struct $new_struct {
+                $(
+                    $(
+                        $(#[$inner_meta])*
+                        $field_vis $trans_field : $trans_new_ty
+                    ),+
+                )?
+            }
+
+            #[automatically_derived]
+            impl From<$base_struct> for $new_struct {
+                fn from(base: $base_struct) -> $new_struct {
+                    Self {
                         $(
-                            $trans_field : $trans_func(base.$trans_field)
-                        ),+
-                    )?
+                            $(
+                                $trans_field : $trans_func(base.$trans_field)
+                            ),+
+                        )?
+                    }
                 }
             }
-        }
-    };
-
-
+        };
 }

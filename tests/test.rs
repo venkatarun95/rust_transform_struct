@@ -9,10 +9,14 @@ fn round_float_pair(f: (f64, f64)) -> (u64, u64) {
 }
 
 transform_struct!(
+    /// Foo
     #[derive(Clone,PartialEq)]
+    /// Bar
     pub struct TestStruct1 TestNewStruct1 {
+        /// Comment
         a: char,
         > {
+            /// Comment
             f:f64 => (round_float -> u64)
         }
     }
@@ -67,8 +71,11 @@ transform_struct!(
 );
 
 transform_struct!(
+    /// Foo
     #[derive(Clone)]
+    /// Bar
     struct TestStruct6 TestNewStruct6 {
+        /// Comment
         pub a: u8
     }
 );
