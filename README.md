@@ -15,9 +15,14 @@ fn round_float(f: f64) -> u64{
 
 transform_struct!(
     #[derive(Clone,PartialEq)]
-    pub struct TestStruct1 TestNewStruct1 {
+    /// `TestStruct::f` has type `f64` while `TestStruct::f` has type `u64`
+    pub struct TestStruct
+    /// `TestNewStruct` is not public while `TestStruct` is
+    struct TestNewStruct {
+        /// Comment 1
         a: char,
         > {
+            /// Comment 2
             pub f:f64 => (round_float -> u64)
         }
     }
